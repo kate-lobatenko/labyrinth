@@ -25,9 +25,25 @@ h1 {
 
 .cell {
   border: 1px solid #000;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   box-sizing: border-box;
   text-align: center;
-  line-height: 20px;
+  line-height: 25px;
+}
+
+.startCell {
+  background: green;
+}
+
+.endCell {
+  background: red;
+}
+
+.wall {
+  background: #000;
+}
+
+.foundWay {
+  background: yellow;
 }
