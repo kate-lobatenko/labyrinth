@@ -27,20 +27,21 @@ function getCellsQuantity() {
 
 function setCells() {
   const CELLS_QUANTITY = getCellsQuantity();
-  const startCell = 0;
-  const endCell = CELLS_QUANTITY - 2;
-  const walls = [5,7,9,25,36,50,51,52,53,108,115];
   const rowsQuantity = 20;
   const columnsQuantity = 20;
-
-  let rows = columns = [];
+  let cells = new Array;
+  const startCell = 0;
+  const endCell = 399;
+  const walls = 1;
 
   for (let i = 0; i < rowsQuantity; i++) {
-    rows[i] = 0;
+    cells[i] = new Array;
+    for (let j = 0; j < columnsQuantity; j++) {
+      cells[i][j] = 0;
+    }
   }
 
-  let cells = new Array(rows, columns);
-
+  console.log(cells);
 
   let $cellContainers = document.getElementsByClassName("cell");
   for (i in $cellContainers) {    
@@ -53,9 +54,11 @@ function setCells() {
       }
 
       if(walls.includes(Number(i))) {
-        console.log("wall is ", i);
         $cellContainers[i].className += " wall";
       }
+
+      $cellContainers[i].innerHTML = cells[i][i];
   }
 
+  return cells;
 }
