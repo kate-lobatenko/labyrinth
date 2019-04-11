@@ -3,11 +3,10 @@ window.addEventListener('load', function () {
 });
 
 function init() {
-  drawContainer();
-  setCells();
+  draw();
 }
 
-function drawContainer() {
+function draw() {
 
   const CELLS_QUANTITY = getCellsQuantity();
 
@@ -18,6 +17,8 @@ function drawContainer() {
     $cell.classList = "cell";
     $container.appendChild($cell);
   }
+
+  drawCells();
 }
 
 function getCellsQuantity() {
@@ -25,40 +26,52 @@ function getCellsQuantity() {
   return CELLS_QUANTITY;
 }
 
-function setCells() {
-  const CELLS_QUANTITY = getCellsQuantity();
+function drawCells(matrix) {
+  let customMatrix = createMatrix.call(matrix);
+  console.log(customMatrix);
+}
+
+function createMatrix() {
+  const SETTINGS = {
+    free: 0,
+    wall: 1,
+    start: 2,
+    finish: 3,
+    visited: 4
+  };
+
   const rowsQuantity = 20;
   const columnsQuantity = 20;
-  let cells = new Array;
-  const startCell = 0;
-  const endCell = 399;
-  const walls = 1;
+
+  let matrix = [];
 
   for (let i = 0; i < rowsQuantity; i++) {
-    cells[i] = new Array;
+    matrix[i] = [];
     for (let j = 0; j < columnsQuantity; j++) {
-      cells[i][j] = 0;
+      matrix[i][j] = Math.round(Math.random());
+      if (i === 0 && j === 0) {
+        matrix[i][j] = SETTINGS.start;
+      }
+      if (i === rowsQuantity - 1 && j === columnsQuantity - 1) {
+        matrix[i][j] = SETTINGS.finish;
+      }
     }
   }
 
-  console.log(cells);
-
   let $cellContainers = document.getElementsByClassName("cell");
-  for (i in $cellContainers) {    
-      if(i == startCell){
-        $cellContainers[i].className += " startCell";
-      }
-
-      if(i == endCell){
-        $cellContainers[i].className += " endCell";
-      }
-
-      if(walls.includes(Number(i))) {
-        $cellContainers[i].className += " wall";
-      }
-
-      $cellContainers[i].innerHTML = cells[i][i];
+  let stringMatrix = matrix.join().split(",");
+  for (i in $cellContainers) {
+    $cellContainers[i].innerHTML = stringMatrix[i];
+    if (stringMatrix[i] == SETTINGS.start) {
+      $cellContainers[i].className += " startCell";
+    }
+    if (stringMatrix[i] == SETTINGS.finish) {
+      $cellContainers[i].className += " finishCell";
+    }
+    if (stringMatrix[i] == SETTINGS.wall) {
+      $cellContainers[i].className += " wall";
+    }
   }
 
-  return cells;
+  return matrix;
 }
