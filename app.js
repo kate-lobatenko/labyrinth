@@ -4,6 +4,7 @@ window.addEventListener('load', function () {
 
 function init() {
   draw();
+  createMatrix();
   loadEventsListeners();
 }
 
@@ -44,7 +45,7 @@ function createMatrix() {
     for (let i = 0; i < rowsQuantity; i++) {
       matrix[i] = [];
       for (let j = 0; j < columnsQuantity; j++) {
-        matrix[i][j] = Math.round(Math.random() - .3);
+        matrix[i][j] = Math.round(Math.abs(Math.random() - .3));
         if (i === 0 && j === 0) {
           matrix[i][j] = SETTINGS.start;
         }
@@ -70,21 +71,23 @@ function createMatrix() {
     }
   }
 
-}
+  return function getMatrix() {
+    return matrix;
+  }
 
-function getMatrix() {
-  return matrix = createMatrix();
 }
 
 function loadEventsListeners() {
   document.getElementById("find-path-btn").addEventListener("click", findPathBtnClick);
+  document.getElementById("clear-path-btn").addEventListener("click", clearPathBtnClick);
 }
 
 function findShortestPath() {
   let neighbors = [];
   let way = [];
   let shortestPath = [];
-  let customMatrix = createMatrix.apply(arguments);
+  let customFunctionMatrix = createMatrix();
+  let customMatrix = customFunctionMatrix();
   console.log(customMatrix);
 }
 
@@ -93,6 +96,17 @@ function findPathBtnClick(e) {
   findShortestPath();
   let $clearPathBtn = document.getElementById("clear-path-btn");
   $clearPathBtn.removeAttribute('disabled');
+}
+
+function clearPathBtnClick(e) {
+  let $cellContainers = document.getElementsByClassName("cell");
+  for (i in $cellContainers) {
+    $cellContainers[i].innerHTML = '';
+    $cellContainers[i].classList = 'cell';
+  }
+  e.target.setAttribute('disabled', true);
+  let $findPathBtn = document.getElementById("find-path-btn");
+  $findPathBtn.removeAttribute('disabled');
 }
 
 function moveLeft(x) {
