@@ -4,6 +4,7 @@ window.addEventListener('load', function () {
 
 function init() {
   draw();
+  loadEventsListeners();
 }
 
 function draw() {
@@ -18,17 +19,11 @@ function draw() {
     $container.appendChild($cell);
   }
 
-  drawCells();
 }
 
 function getCellsQuantity() {
   const CELLS_QUANTITY = 400;
   return CELLS_QUANTITY;
-}
-
-function drawCells(matrix) {
-  let customMatrix = createMatrix.call(matrix);
-  console.log(customMatrix);
 }
 
 function createMatrix() {
@@ -45,33 +40,73 @@ function createMatrix() {
 
   let matrix = [];
 
-  for (let i = 0; i < rowsQuantity; i++) {
-    matrix[i] = [];
-    for (let j = 0; j < columnsQuantity; j++) {
-      matrix[i][j] = Math.round(Math.random());
-      if (i === 0 && j === 0) {
-        matrix[i][j] = SETTINGS.start;
+  if (matrix.length === 0) {
+    for (let i = 0; i < rowsQuantity; i++) {
+      matrix[i] = [];
+      for (let j = 0; j < columnsQuantity; j++) {
+        matrix[i][j] = Math.round(Math.random() - .3);
+        if (i === 0 && j === 0) {
+          matrix[i][j] = SETTINGS.start;
+        }
+        if (i === rowsQuantity - 1 && j === columnsQuantity - 1) {
+          matrix[i][j] = SETTINGS.finish;
+        }
       }
-      if (i === rowsQuantity - 1 && j === columnsQuantity - 1) {
-        matrix[i][j] = SETTINGS.finish;
+    }
+
+    let $cellContainers = document.getElementsByClassName("cell");
+    let stringMatrix = matrix.join().split(",");
+    for (i in $cellContainers) {
+      $cellContainers[i].innerHTML = stringMatrix[i];
+      if (stringMatrix[i] == SETTINGS.start) {
+        $cellContainers[i].className += " startCell";
+      }
+      if (stringMatrix[i] == SETTINGS.finish) {
+        $cellContainers[i].className += " finishCell";
+      }
+      if (stringMatrix[i] == SETTINGS.wall) {
+        $cellContainers[i].className += " wall";
       }
     }
   }
 
-  let $cellContainers = document.getElementsByClassName("cell");
-  let stringMatrix = matrix.join().split(",");
-  for (i in $cellContainers) {
-    $cellContainers[i].innerHTML = stringMatrix[i];
-    if (stringMatrix[i] == SETTINGS.start) {
-      $cellContainers[i].className += " startCell";
-    }
-    if (stringMatrix[i] == SETTINGS.finish) {
-      $cellContainers[i].className += " finishCell";
-    }
-    if (stringMatrix[i] == SETTINGS.wall) {
-      $cellContainers[i].className += " wall";
-    }
-  }
+}
 
-  return matrix;
+function getMatrix() {
+  return matrix = createMatrix();
+}
+
+function loadEventsListeners() {
+  document.getElementById("find-path-btn").addEventListener("click", findPathBtnClick);
+}
+
+function findShortestPath() {
+  let neighbors = [];
+  let way = [];
+  let shortestPath = [];
+  let customMatrix = createMatrix.apply(arguments);
+  console.log(customMatrix);
+}
+
+function findPathBtnClick(e) {
+  e.target.setAttribute('disabled', true);
+  findShortestPath();
+  let $clearPathBtn = document.getElementById("clear-path-btn");
+  $clearPathBtn.removeAttribute('disabled');
+}
+
+function moveLeft(x) {
+  return x - 1;
+}
+
+function moveRight(x) {
+  return x + 1;
+}
+
+function moveTop(y) {
+  return y - 1;
+}
+
+function moveBottom(y) {
+  return y + 1;
 }
