@@ -4,7 +4,6 @@ window.addEventListener('load', function () {
 
 function init() {
   draw();
-  createMatrix();
   loadEventsListeners();
 }
 
@@ -32,8 +31,7 @@ function createMatrix() {
     free: 0,
     wall: 1,
     start: 2,
-    finish: 3,
-    visited: 4
+    finish: 3
   };
 
   const rowsQuantity = 20;
@@ -45,7 +43,7 @@ function createMatrix() {
     for (let i = 0; i < rowsQuantity; i++) {
       matrix[i] = [];
       for (let j = 0; j < columnsQuantity; j++) {
-        matrix[i][j] = Math.round(Math.abs(Math.random() - .3));
+        matrix[i][j] = Math.round(Math.abs(Math.random() - .2));
         if (i === 0 && j === 0) {
           matrix[i][j] = SETTINGS.start;
         }
@@ -83,19 +81,77 @@ function loadEventsListeners() {
 }
 
 function findShortestPath() {
-  let neighbors = [];
-  let way = [];
-  let shortestPath = [];
   let customFunctionMatrix = createMatrix();
-  let customMatrix = customFunctionMatrix();
-  console.log(customMatrix);
+  let matrix = customFunctionMatrix();
+
+  let start = [0, 0];
+  let end = [19, 19];
+
+  function findWay(position, end) {
+    let queue = [];
+
+    matrix[position[0]][position[1]] = 1;
+    queue.push([position]); // store a path, not just a position
+
+    while (queue.length > 0) {
+      let path = queue.shift(); // get the path out of the queue
+      let pos = path[path.length - 1]; // ... and then the last position from it
+      let direction = [
+        [pos[0] + 1, pos[1]],
+        [pos[0], pos[1] + 1],
+        [pos[0] - 1, pos[1]],
+        [pos[0], pos[1] - 1]
+      ];
+
+      for (let i = 0; i < direction.length; i++) {
+        // Perform this check first:
+        if (direction[i][0] == end[0] && direction[i][1] == end[1]) {
+          // return the path that led to the find
+          return path.concat([end]);
+        }
+
+        if (direction[i][0] < 0 || direction[i][0] >= matrix[0].length ||
+          direction[i][1] < 0 || direction[i][1] >= matrix[0].length ||
+          matrix[direction[i][0]][direction[i][1]] != 0) {
+          continue;
+        }
+
+        matrix[direction[i][0]][direction[i][1]] = 1;
+        // extend and push the path on the queue
+        queue.push(path.concat([direction[i]]));
+      }
+    }
+  }
+
+  let path = findWay(start, end);
+  return path;
 }
 
 function findPathBtnClick(e) {
   e.target.setAttribute('disabled', true);
-  findShortestPath();
+  drawPath();
   let $clearPathBtn = document.getElementById("clear-path-btn");
   $clearPathBtn.removeAttribute('disabled');
+}
+
+function drawPath() {
+  let $cellContainers = document.getElementsByClassName("cell");
+
+  let tempArr = getTempArr();
+
+  for (i in $cellContainers) {
+    for (let m = 0; m < tempArr.length; m++) {
+      if (i === $cellContainers - 1) {
+        break;
+      }
+      if (i == Number(tempArr[m])) {
+        $cellContainers[i].className += " foundWay";
+        $cellContainers[i].innerHTML = 3;
+        tempArr.shift();
+      }
+    }
+
+  }
 }
 
 function clearPathBtnClick(e) {
@@ -109,18 +165,14 @@ function clearPathBtnClick(e) {
   $findPathBtn.removeAttribute('disabled');
 }
 
-function moveLeft(x) {
-  return x - 1;
-}
-
-function moveRight(x) {
-  return x + 1;
-}
-
-function moveTop(y) {
-  return y - 1;
-}
-
-function moveBottom(y) {
-  return y + 1;
+function getTempArr() {
+  let path = findShortestPath();
+  console.log(path);
+  let tempArr = [];
+  for (let i = 0; i < path.length; i++) {
+    let temp = path[i];
+    let number = temp[0] * 20 + parseInt(temp[1]) + 1;
+    tempArr.push(number);
+  }
+  return tempArr;
 }
