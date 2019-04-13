@@ -3,11 +3,23 @@ window.addEventListener('load', function () {
 });
 
 function init() {
-  draw();
+  drawCells();
   loadEventsListeners();
 }
 
-function draw() {
+function getSettings() {
+  const SETTINGS = {
+    free: 0,
+    wall: 1,
+    start: 2,
+    finish: 3,
+    rowsQuantity: 20,
+    columnsQuantity: 20
+  };
+  return SETTINGS;
+}
+
+function drawCells() {
 
   const CELLS_QUANTITY = getCellsQuantity();
 
@@ -27,47 +39,29 @@ function getCellsQuantity() {
 }
 
 function createMatrix() {
-  const SETTINGS = {
-    free: 0,
-    wall: 1,
-    start: 2,
-    finish: 3
-  };
 
-  const rowsQuantity = 20;
-  const columnsQuantity = 20;
+  const SETTINGS = getSettings();
 
   let matrix = [];
 
+  console.log("matrix before:", matrix);
+
   if (matrix.length === 0) {
-    for (let i = 0; i < rowsQuantity; i++) {
+    for (let i = 0; i < SETTINGS.rowsQuantity; i++) {
       matrix[i] = [];
-      for (let j = 0; j < columnsQuantity; j++) {
+      for (let j = 0; j < SETTINGS.columnsQuantity; j++) {
         matrix[i][j] = Math.round(Math.abs(Math.random() - .2));
         if (i === 0 && j === 0) {
           matrix[i][j] = SETTINGS.start;
         }
-        if (i === rowsQuantity - 1 && j === columnsQuantity - 1) {
+        if (i === SETTINGS.rowsQuantity - 1 && j === SETTINGS.columnsQuantity - 1) {
           matrix[i][j] = SETTINGS.finish;
         }
       }
     }
-
-    let $cellContainers = document.getElementsByClassName("cell");
-    let stringMatrix = matrix.join().split(",");
-    for (i in $cellContainers) {
-      $cellContainers[i].innerHTML = stringMatrix[i];
-      if (stringMatrix[i] == SETTINGS.start) {
-        $cellContainers[i].className += " startCell";
-      }
-      if (stringMatrix[i] == SETTINGS.finish) {
-        $cellContainers[i].className += " finishCell";
-      }
-      if (stringMatrix[i] == SETTINGS.wall) {
-        $cellContainers[i].className += " wall";
-      }
-    }
   }
+
+  console.log("matrix after:", matrix);
 
   return function getMatrix() {
     return matrix;
@@ -75,14 +69,68 @@ function createMatrix() {
 
 }
 
+function getMatrix() {
+  let customFunctionMatrix = createMatrix();
+  let matrix = customFunctionMatrix();
+  return matrix;
+}
+
+function drawMatrix() {
+  const SETTINGS = getSettings();
+
+  let matrix = getMatrix();
+
+  let $cellContainers = document.getElementsByClassName("cell");
+  let stringMatrix = matrix.join().split(",");
+  for (i in $cellContainers) {
+    $cellContainers[i].innerHTML = stringMatrix[i];
+    if (stringMatrix[i] == SETTINGS.start) {
+      $cellContainers[i].className += " startCell";
+    }
+    if (stringMatrix[i] == SETTINGS.finish) {
+      $cellContainers[i].className += " finishCell";
+    }
+    if (stringMatrix[i] == SETTINGS.wall) {
+      $cellContainers[i].className += " wall";
+    }
+  }
+}
+
 function loadEventsListeners() {
+  document.getElementById("generate").addEventListener("click", generateBtnClick);
   document.getElementById("find-path-btn").addEventListener("click", findPathBtnClick);
   document.getElementById("clear-path-btn").addEventListener("click", clearPathBtnClick);
 }
 
+function generateBtnClick(e) {
+  let $findPathBtn = document.getElementById("find-path-btn");
+  e.target.setAttribute("disabled", "disabled");
+  $findPathBtn.removeAttribute("disabled");
+  drawMatrix();
+}
+
+function findPathBtnClick(e) {
+  let $generateBtn = document.getElementById("generate");
+  let $clearPathBtn = document.getElementById("clear-path-btn");
+  e.target.setAttribute("disabled", "disabled");
+  $generateBtn.removeAttribute("disabled");
+  $clearPathBtn.removeAttribute("disabled");
+  drawPath();
+}
+
+function clearPathBtnClick(e) {
+  let $cellContainers = document.getElementsByClassName("cell");
+  for (i in $cellContainers) {
+    $cellContainers[i].innerHTML = '';
+    $cellContainers[i].classList = 'cell';
+  }
+  e.target.setAttribute("disabled", "disabled");
+  let $generateBtn = document.getElementById("generate");
+  $generateBtn.disabled = false;
+}
+
 function findShortestPath() {
-  let customFunctionMatrix = createMatrix();
-  let matrix = customFunctionMatrix();
+  let matrix = getMatrix();
 
   let start = [0, 0];
   let end = [19, 19];
@@ -127,26 +175,33 @@ function findShortestPath() {
   return path;
 }
 
-function findPathBtnClick(e) {
-  e.target.setAttribute('disabled', true);
-  drawPath();
-  let $clearPathBtn = document.getElementById("clear-path-btn");
-  $clearPathBtn.removeAttribute('disabled');
-}
 
 function drawPath() {
   let $cellContainers = document.getElementsByClassName("cell");
 
   let tempArr = getTempArr();
 
+  function getTempArr() {
+
+    let path = findShortestPath();
+    console.log(path);
+    let tempArr = [];
+    for (let i = 0; i < path.length; i++) {
+      let temp = path[i];
+      let number = temp[0] * 20 + parseInt(temp[1]);
+      tempArr.push(number);
+    }
+    return tempArr;
+  }
+
   for (i in $cellContainers) {
     for (let m = 0; m < tempArr.length; m++) {
-      if (i === $cellContainers - 1) {
+      if (i === $cellContainers.length) {
         break;
       }
       if (i == Number(tempArr[m])) {
         $cellContainers[i].className += " foundWay";
-        $cellContainers[i].innerHTML = 3;
+        $cellContainers[i].innerHTML = tempArr[m];
         tempArr.shift();
       }
     }
@@ -154,25 +209,3 @@ function drawPath() {
   }
 }
 
-function clearPathBtnClick(e) {
-  let $cellContainers = document.getElementsByClassName("cell");
-  for (i in $cellContainers) {
-    $cellContainers[i].innerHTML = '';
-    $cellContainers[i].classList = 'cell';
-  }
-  e.target.setAttribute('disabled', true);
-  let $findPathBtn = document.getElementById("find-path-btn");
-  $findPathBtn.removeAttribute('disabled');
-}
-
-function getTempArr() {
-  let path = findShortestPath();
-  console.log(path);
-  let tempArr = [];
-  for (let i = 0; i < path.length; i++) {
-    let temp = path[i];
-    let number = temp[0] * 20 + parseInt(temp[1]) + 1;
-    tempArr.push(number);
-  }
-  return tempArr;
-}
