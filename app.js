@@ -44,8 +44,6 @@ function createMatrix() {
 
   let matrix = [];
 
-  console.log("matrix before:", matrix);
-
   if (matrix.length === 0) {
     for (let i = 0; i < SETTINGS.rowsQuantity; i++) {
       matrix[i] = [];
@@ -60,8 +58,6 @@ function createMatrix() {
       }
     }
   }
-
-  console.log("matrix after:", matrix);
 
   return function getMatrix() {
     return matrix;
@@ -171,30 +167,16 @@ function findShortestPath() {
     }
   }
 
-  let path = findWay(start, end);
+  let path = [];
   return function getPath() {
-    return path;
+    return path = findWay(start, end);
   }
 }
-
 
 function drawPath() {
   let $cellContainers = document.getElementsByClassName("cell");
 
   let tempArr = getTempArr();
-
-  function getTempArr() {
-    let pathFunction = findShortestPath();
-    let path = pathFunction();
-    console.log(path);
-    let tempArr = [];
-    for (let i = 0; i < path.length; i++) {
-      let temp = path[i];
-      let number = temp[0] * 20 + parseInt(temp[1]);
-      tempArr.push(number);
-    }
-    return tempArr;
-  }
 
   for (i in $cellContainers) {
     for (let m = 0; m < tempArr.length; m++) {
@@ -209,4 +191,36 @@ function drawPath() {
     }
 
   }
+}
+
+function getTempArr() {
+  let pathFunction = findShortestPath();
+  let path = pathFunction();
+  if (path === undefined) {
+    let text = "The path is undefined. Please try to re-generate labyrinth";
+    showMessage(text);
+  } else {
+    let gapArr = [];
+    for (let i = 0; i < path.length; i++) {
+      let temp = path[i];
+      let number = temp[0] * 20 + parseInt(temp[1]);
+      gapArr.push(number);
+    }
+    return gapArr;
+  }
+
+}
+
+function showMessage(someText) {
+  const div = document.createElement("div");
+  div.className = 'alert fail';
+  div.appendChild(document.createTextNode(someText));
+
+  const $wrapper = document.getElementById("wrapper");
+  const $title = document.getElementById("title");
+  $wrapper.insertBefore(div, $title);
+
+  setTimeout(function () {
+    document.querySelector(".alert").remove();
+  }, 9000);
 }
