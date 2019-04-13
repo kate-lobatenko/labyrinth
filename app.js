@@ -113,7 +113,7 @@ function findPathBtnClick(e) {
   let $generateBtn = document.getElementById("generate");
   let $clearPathBtn = document.getElementById("clear-path-btn");
   e.target.setAttribute("disabled", "disabled");
-  $generateBtn.removeAttribute("disabled");
+  $generateBtn.setAttribute("disabled", "disabled");
   $clearPathBtn.removeAttribute("disabled");
   drawPath();
 }
@@ -172,7 +172,9 @@ function findShortestPath() {
   }
 
   let path = findWay(start, end);
-  return path;
+  return function getPath() {
+    return path;
+  }
 }
 
 
@@ -182,8 +184,8 @@ function drawPath() {
   let tempArr = getTempArr();
 
   function getTempArr() {
-
-    let path = findShortestPath();
+    let pathFunction = findShortestPath();
+    let path = pathFunction();
     console.log(path);
     let tempArr = [];
     for (let i = 0; i < path.length; i++) {
@@ -208,4 +210,3 @@ function drawPath() {
 
   }
 }
-
