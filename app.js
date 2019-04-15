@@ -43,12 +43,12 @@ function createMatrix() {
   const SETTINGS = getSettings();
 
   let matrix = [];
-
+  console.log("createMatrix, matrix = ", matrix);
   if (matrix.length === 0) {
     for (let i = 0; i < SETTINGS.rowsQuantity; i++) {
       matrix[i] = [];
       for (let j = 0; j < SETTINGS.columnsQuantity; j++) {
-        matrix[i][j] = Math.round(Math.abs(Math.random() - .2));
+        matrix[i][j] = Math.round(Math.abs(Math.random() - .3));
         if (i === 0 && j === 0) {
           matrix[i][j] = SETTINGS.start;
         }
@@ -59,25 +59,28 @@ function createMatrix() {
     }
   }
 
-  return function getMatrix() {
+  return function saveMatrix() {
     return matrix;
   }
-
 }
 
-function getMatrix() {
-  let customFunctionMatrix = createMatrix();
-  let matrix = customFunctionMatrix();
-  return matrix;
+function getMatrix(matrix) {
+  if (typeof matrix === 'undefined') {
+    let customFunctionMatrix = createMatrix();
+    let tempMatrix = customFunctionMatrix();
+    return tempMatrix;
+  } else {
+    return matrix;
+  }
 }
 
-function drawMatrix() {
+function drawMatrix(matrix) {
   const SETTINGS = getSettings();
 
-  let matrix = getMatrix();
+  let currentMatrix = getMatrix(matrix);
 
   let $cellContainers = document.getElementsByClassName("cell");
-  let stringMatrix = matrix.join().split(",");
+  let stringMatrix = currentMatrix.join().split(",");
   for (i in $cellContainers) {
     $cellContainers[i].innerHTML = stringMatrix[i];
     if (stringMatrix[i] == SETTINGS.start) {
@@ -93,16 +96,16 @@ function drawMatrix() {
 }
 
 function loadEventsListeners() {
-  document.getElementById("generate").addEventListener("click", generateBtnClick);
-  document.getElementById("find-path-btn").addEventListener("click", findPathBtnClick);
-  document.getElementById("clear-path-btn").addEventListener("click", clearPathBtnClick);
+  document.getElementById("generate").addEventListener("click", generateBtnClick(matrix,e));
+  document.getElementById("find-path-btn").addEventListener("click", findPathBtnClick(matrix,e));
+  document.getElementById("clear-path-btn").addEventListener("click", clearPathBtnClick(matrix,e));
 }
 
-function generateBtnClick(e) {
+function generateBtnClick(matrix,e) {
   let $findPathBtn = document.getElementById("find-path-btn");
   e.target.setAttribute("disabled", "disabled");
   $findPathBtn.removeAttribute("disabled");
-  drawMatrix();
+  drawMatrix(matrix);
 }
 
 function findPathBtnClick(e) {
@@ -126,15 +129,17 @@ function clearPathBtnClick(e) {
 }
 
 function findShortestPath() {
-  let matrix = getMatrix();
+  let matrix = getMatrix(matrix);
 
+  console.log("findShortestPath, matrix = ", matrix);
   let start = [0, 0];
   let end = [19, 19];
 
   function findWay(position, end) {
     let queue = [];
-
+    // console.log("matrix[position[0]][position[1]]", matrix[position[0]][position[1]]);
     matrix[position[0]][position[1]] = 1;
+    // console.log("matrix[position[0]][position[1]]", matrix[position[0]][position[1]]);
     queue.push([position]); // store a path, not just a position
 
     while (queue.length > 0) {
@@ -165,6 +170,7 @@ function findShortestPath() {
         queue.push(path.concat([direction[i]]));
       }
     }
+    console.log("findShortestPath, path = ", path);
   }
 
   let path = [];
@@ -178,28 +184,31 @@ function drawPath() {
 
   let tempArr = getTempArr();
 
-  for (i in $cellContainers) {
-    for (let m = 0; m < tempArr.length; m++) {
-      if (i === $cellContainers.length) {
-        break;
-      }
-      if (i == Number(tempArr[m])) {
-        $cellContainers[i].className += " foundWay";
-        $cellContainers[i].innerHTML = tempArr[m];
-        tempArr.shift();
+  if (tempArr !== undefined) {
+    for (i in $cellContainers) {
+      for (let m = 0; m < tempArr.length; m++) {
+        if (i === $cellContainers.length - 1) {
+          break;
+        }
+        if (i == Number(tempArr[m])) {
+          $cellContainers[i].className += " foundWay";
+          $cellContainers[i].innerHTML = tempArr[m];
+          tempArr.shift();
+        }
       }
     }
-
   }
 }
 
 function getTempArr() {
   let pathFunction = findShortestPath();
   let path = pathFunction();
+  console.log("getTempArr, path = ", path);
   if (path === undefined) {
     let text = "The path is undefined. Please try to re-generate labyrinth";
     showMessage(text);
   } else {
+    console.log("getTempArr, if path not undefined = ", path);
     let gapArr = [];
     for (let i = 0; i < path.length; i++) {
       let temp = path[i];

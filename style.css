@@ -52,6 +52,13 @@ div {
 
 .foundWay {
   background: yellow;
+  -moz-transition: all 2s ease-in;
+  /* WebKit */
+  -webkit-transition: all 2s ease-in;
+  /* Opera */
+  -o-transition: all 2s ease-in;
+  /* Standard */
+  transition: all 2s ease-in;
 }
 
 #generate,
