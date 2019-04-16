@@ -64,7 +64,7 @@ function createMatrix() {
   }
 }
 
-function getMatrix(matrix) {
+function getMatrix() {
   if (typeof matrix === 'undefined') {
     let customFunctionMatrix = createMatrix();
     let tempMatrix = customFunctionMatrix();
@@ -74,10 +74,10 @@ function getMatrix(matrix) {
   }
 }
 
-function drawMatrix(matrix) {
+function drawMatrix() {
   const SETTINGS = getSettings();
 
-  let currentMatrix = getMatrix(matrix);
+  let currentMatrix = getMatrix();
 
   let $cellContainers = document.getElementsByClassName("cell");
   let stringMatrix = currentMatrix.join().split(",");
@@ -96,16 +96,16 @@ function drawMatrix(matrix) {
 }
 
 function loadEventsListeners() {
-  document.getElementById("generate").addEventListener("click", generateBtnClick(matrix,e));
-  document.getElementById("find-path-btn").addEventListener("click", findPathBtnClick(matrix,e));
-  document.getElementById("clear-path-btn").addEventListener("click", clearPathBtnClick(matrix,e));
+  document.getElementById("generate").addEventListener("click", generateBtnClick);
+  document.getElementById("find-path-btn").addEventListener("click", findPathBtnClick);
+  document.getElementById("clear-path-btn").addEventListener("click", clearPathBtnClick);
 }
 
-function generateBtnClick(matrix,e) {
+function generateBtnClick(e) {
   let $findPathBtn = document.getElementById("find-path-btn");
   e.target.setAttribute("disabled", "disabled");
   $findPathBtn.removeAttribute("disabled");
-  drawMatrix(matrix);
+  drawMatrix();
 }
 
 function findPathBtnClick(e) {
@@ -129,7 +129,7 @@ function clearPathBtnClick(e) {
 }
 
 function findShortestPath() {
-  let matrix = getMatrix(matrix);
+  let matrix = getMatrix();
 
   console.log("findShortestPath, matrix = ", matrix);
   let start = [0, 0];
