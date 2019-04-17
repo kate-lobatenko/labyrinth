@@ -7,16 +7,14 @@ function init() {
   loadEventsListeners();
 }
 
-function getSettings() {
-  const SETTINGS = {
-    free: 0,
-    wall: 1,
-    start: 2,
-    finish: 3,
-    rowsQuantity: 20,
-    columnsQuantity: 20
-  };
-  return SETTINGS;
+const SETTINGS = {
+  free: 0,
+  wall: 1,
+  start: 2,
+  finish: 3,
+  rowsQuantity: 20,
+  columnsQuantity: 20,
+  gameArr: []
 }
 
 function drawCells() {
@@ -39,11 +37,7 @@ function getCellsQuantity() {
 }
 
 function createMatrix() {
-
-  const SETTINGS = getSettings();
-
   let matrix = [];
-  console.log("createMatrix, matrix = ", matrix);
   if (matrix.length === 0) {
     for (let i = 0; i < SETTINGS.rowsQuantity; i++) {
       matrix[i] = [];
@@ -58,25 +52,20 @@ function createMatrix() {
       }
     }
   }
-
-  return function saveMatrix() {
-    return matrix;
-  }
+  return SETTINGS.gameArr = matrix;
 }
 
+
 function getMatrix() {
-  if (typeof matrix === 'undefined') {
-    let customFunctionMatrix = createMatrix();
-    let tempMatrix = customFunctionMatrix();
-    return tempMatrix;
+  if (SETTINGS.gameArr.length === 0) {
+    let tempMatrix = createMatrix();
+    return SETTINGS.gameArr = tempMatrix;
   } else {
-    return matrix;
+    return SETTINGS.gameArr;
   }
 }
 
 function drawMatrix() {
-  const SETTINGS = getSettings();
-
   let currentMatrix = getMatrix();
 
   let $cellContainers = document.getElementsByClassName("cell");
@@ -93,6 +82,8 @@ function drawMatrix() {
       $cellContainers[i].className += " wall";
     }
   }
+
+  return currentMatrix;
 }
 
 function loadEventsListeners() {
@@ -105,6 +96,7 @@ function generateBtnClick(e) {
   let $findPathBtn = document.getElementById("find-path-btn");
   e.target.setAttribute("disabled", "disabled");
   $findPathBtn.removeAttribute("disabled");
+  createMatrix();
   drawMatrix();
 }
 
@@ -131,15 +123,12 @@ function clearPathBtnClick(e) {
 function findShortestPath() {
   let matrix = getMatrix();
 
-  console.log("findShortestPath, matrix = ", matrix);
   let start = [0, 0];
   let end = [19, 19];
 
   function findWay(position, end) {
     let queue = [];
-    // console.log("matrix[position[0]][position[1]]", matrix[position[0]][position[1]]);
-    matrix[position[0]][position[1]] = 1;
-    // console.log("matrix[position[0]][position[1]]", matrix[position[0]][position[1]]);
+
     queue.push([position]); // store a path, not just a position
 
     while (queue.length > 0) {
@@ -170,7 +159,6 @@ function findShortestPath() {
         queue.push(path.concat([direction[i]]));
       }
     }
-    console.log("findShortestPath, path = ", path);
   }
 
   let path = [];
@@ -203,12 +191,11 @@ function drawPath() {
 function getTempArr() {
   let pathFunction = findShortestPath();
   let path = pathFunction();
-  console.log("getTempArr, path = ", path);
+
   if (path === undefined) {
     let text = "The path is undefined. Please try to re-generate labyrinth";
     showMessage(text);
   } else {
-    console.log("getTempArr, if path not undefined = ", path);
     let gapArr = [];
     for (let i = 0; i < path.length; i++) {
       let temp = path[i];
@@ -217,7 +204,6 @@ function getTempArr() {
     }
     return gapArr;
   }
-
 }
 
 function showMessage(someText) {
