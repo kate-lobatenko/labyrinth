@@ -4,7 +4,7 @@ window.addEventListener('load', function () {
 
 function init() {
   drawCells();
-  loadEventsListeners();
+  bindEventsListeners();
 }
 
 const SETTINGS = {
@@ -19,7 +19,7 @@ const SETTINGS = {
 
 function drawCells() {
 
-  const CELLS_QUANTITY = getCellsQuantity();
+  const CELLS_QUANTITY = SETTINGS.rowsQuantity * SETTINGS.columnsQuantity;
 
   const $container = document.getElementById("container");
 
@@ -31,11 +31,6 @@ function drawCells() {
 
 }
 
-function getCellsQuantity() {
-  const CELLS_QUANTITY = 400;
-  return CELLS_QUANTITY;
-}
-
 function createMatrix() {
   let matrix = [];
   if (matrix.length === 0) {
@@ -43,15 +38,12 @@ function createMatrix() {
       matrix[i] = [];
       for (let j = 0; j < SETTINGS.columnsQuantity; j++) {
         matrix[i][j] = Math.round(Math.abs(Math.random() - .3));
-        if (i === 0 && j === 0) {
-          matrix[i][j] = SETTINGS.start;
-        }
-        if (i === SETTINGS.rowsQuantity - 1 && j === SETTINGS.columnsQuantity - 1) {
-          matrix[i][j] = SETTINGS.finish;
-        }
       }
     }
+    matrix[0][0] = SETTINGS.start;
+    matrix[SETTINGS.rowsQuantity - 1][SETTINGS.columnsQuantity - 1] = SETTINGS.finish;
   }
+
   return SETTINGS.gameArr = matrix;
 }
 
@@ -59,40 +51,38 @@ function createMatrix() {
 function getMatrix() {
   if (SETTINGS.gameArr.length === 0) {
     let tempMatrix = createMatrix();
-    return SETTINGS.gameArr = tempMatrix;
+    return tempMatrix;
   } else {
     return SETTINGS.gameArr;
   }
 }
 
 function drawMatrix() {
-  let currentMatrix = getMatrix();
+  let currentMatrix = SETTINGS.gameArr;
 
   let $cellContainers = document.getElementsByClassName("cell");
-  let stringMatrix = currentMatrix.join().split(",");
+  let stringMatrix = currentMatrix.flat();
   for (i in $cellContainers) {
+    let cellType = stringMatrix[i];
+    let classNames = ['cell', 'wall', 'startCell', 'finishCell'];
+    $cellContainers[i].classList.add(classNames[cellType]);
     $cellContainers[i].innerHTML = stringMatrix[i];
-    if (stringMatrix[i] == SETTINGS.start) {
-      $cellContainers[i].className += " startCell";
-    }
-    if (stringMatrix[i] == SETTINGS.finish) {
-      $cellContainers[i].className += " finishCell";
-    }
-    if (stringMatrix[i] == SETTINGS.wall) {
-      $cellContainers[i].className += " wall";
-    }
   }
 
   return currentMatrix;
 }
 
-function loadEventsListeners() {
+function bindEventsListeners() {
   document.getElementById("generate").addEventListener("click", generateBtnClick);
   document.getElementById("find-path-btn").addEventListener("click", findPathBtnClick);
-  document.getElementById("clear-path-btn").addEventListener("click", clearPathBtnClick);
 }
 
 function generateBtnClick(e) {
+  const div = document.querySelectorAll("alert fail");
+  if (div.length) {
+    div.remove();
+  }
+  clearMatrix();
   let $findPathBtn = document.getElementById("find-path-btn");
   e.target.setAttribute("disabled", "disabled");
   $findPathBtn.removeAttribute("disabled");
@@ -102,20 +92,17 @@ function generateBtnClick(e) {
 
 function findPathBtnClick(e) {
   let $generateBtn = document.getElementById("generate");
-  let $clearPathBtn = document.getElementById("clear-path-btn");
   e.target.setAttribute("disabled", "disabled");
-  $generateBtn.setAttribute("disabled", "disabled");
-  $clearPathBtn.removeAttribute("disabled");
+  $generateBtn.removeAttribute("disabled");
   drawPath();
 }
 
-function clearPathBtnClick(e) {
+function clearMatrix(e) {
   let $cellContainers = document.getElementsByClassName("cell");
   for (i in $cellContainers) {
     $cellContainers[i].innerHTML = '';
     $cellContainers[i].classList = 'cell';
   }
-  e.target.setAttribute("disabled", "disabled");
   let $generateBtn = document.getElementById("generate");
   $generateBtn.disabled = false;
 }
