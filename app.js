@@ -37,7 +37,8 @@ function createMatrix() {
     for (let i = 0; i < SETTINGS.rowsQuantity; i++) {
       matrix[i] = [];
       for (let j = 0; j < SETTINGS.columnsQuantity; j++) {
-        matrix[i][j] = Math.round(Math.abs(Math.random() - .3));
+        // matrix[i][j] = Math.round(Math.abs(Math.random()));
+        matrix[i][j] = Math.round(Math.abs(Math.random() - .7));
       }
     }
     matrix[0][0] = SETTINGS.start;
@@ -62,11 +63,13 @@ function drawMatrix() {
 
   let $cellContainers = document.getElementsByClassName("cell");
   let stringMatrix = currentMatrix.flat();
-  for (i in $cellContainers) {
+  for (let i = 0; i < $cellContainers.length; i++) {
     let cellType = stringMatrix[i];
     let classNames = ['cell', 'wall', 'startCell', 'finishCell'];
+    
     $cellContainers[i].classList.add(classNames[cellType]);
     $cellContainers[i].innerHTML = stringMatrix[i];
+
   }
 
   return currentMatrix;
@@ -148,10 +151,7 @@ function findShortestPath() {
     }
   }
 
-  let path = [];
-  return function getPath() {
-    return path = findWay(start, end);
-  }
+  return findWay(start, end);
 }
 
 function drawPath() {
@@ -159,25 +159,26 @@ function drawPath() {
 
   let tempArr = getTempArr();
 
-  if (tempArr !== undefined) {
-    for (i in $cellContainers) {
-      for (let m = 0; m < tempArr.length; m++) {
-        if (i === $cellContainers.length - 1) {
-          break;
-        }
-        if (i == Number(tempArr[m])) {
-          $cellContainers[i].className += " foundWay";
-          $cellContainers[i].innerHTML = tempArr[m];
-          tempArr.shift();
-        }
+  if (!tempArr) {
+    return;
+  }
+
+  for (i in $cellContainers) {
+    for (let m = 0; m < tempArr.length; m++) {
+      if (i === $cellContainers.length - 1) {
+        break;
+      }
+      if (i == Number(tempArr[m])) {
+        $cellContainers[i].className += " foundWay";
+        $cellContainers[i].innerHTML = tempArr[m];
+        tempArr.shift();
       }
     }
   }
 }
 
 function getTempArr() {
-  let pathFunction = findShortestPath();
-  let path = pathFunction();
+  let path = findShortestPath();
 
   if (path === undefined) {
     let text = "The path is undefined. Please try to re-generate labyrinth";
