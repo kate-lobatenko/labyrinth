@@ -81,10 +81,11 @@ function bindEventsListeners() {
 }
 
 function generateBtnClick(e) {
-  const div = document.querySelectorAll("alert fail");
-  if (div.length) {
-    div.remove();
+  const $divError = document.querySelector(".alert");
+  if ($divError) {
+    $divError.remove(); 
   }
+
   clearMatrix();
   let $findPathBtn = document.getElementById("find-path-btn");
   e.target.setAttribute("disabled", "disabled");
@@ -205,5 +206,5 @@ function showMessage(someText) {
 
   setTimeout(function () {
     document.querySelector(".alert").remove();
-  }, 9000);
+  }, 5000);
 }
