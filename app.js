@@ -37,8 +37,7 @@ function createMatrix() {
     for (let i = 0; i < SETTINGS.rowsQuantity; i++) {
       matrix[i] = [];
       for (let j = 0; j < SETTINGS.columnsQuantity; j++) {
-        // matrix[i][j] = Math.round(Math.abs(Math.random()));
-        matrix[i][j] = Math.round(Math.abs(Math.random() - .7));
+        matrix[i][j] = Math.round(Math.abs(Math.random() - .3));
       }
     }
     matrix[0][0] = SETTINGS.start;
