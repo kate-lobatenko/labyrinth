@@ -77,3 +77,20 @@ div {
   padding: 20px;
   font-size: 1.5em;
 }
+
+@media all and (max-width: 600px) {
+  .cell {
+    width: calc(90vw / 20);
+    height: calc(90vw / 20);
+    line-height: calc(90vw / 20);
+    font-size: 0.9em;
+  }
+
+  #container {
+    width: 90vw;
+  }
+
+  #find-path-btn {
+    margin-bottom: 1.5em;
+  }
+}
