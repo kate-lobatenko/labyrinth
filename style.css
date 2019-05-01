@@ -7,13 +7,19 @@ body {
 
 h1 {
   text-align: center;
+  font-size: 3em;
+}
+
+h1,
+button,
+div {
+  font-family: 'Courier New', Courier, monospace;
 }
 
 #container {
   display: flex;
   justify-content: center;
   box-sizing: border-box;
-  max-height: 500px;
   margin: 0 auto;
   padding-top: 0;
   max-width: 500px;
@@ -25,9 +31,49 @@ h1 {
 
 .cell {
   border: 1px solid #000;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   box-sizing: border-box;
   text-align: center;
-  line-height: 20px;
+  line-height: 25px;
+}
+
+.startCell {
+  background: green;
+}
+
+.finishCell {
+  background: red;
+}
+
+.wall {
+  background: #000;
+}
+
+.foundWay {
+  background: yellow;
+  -moz-transition: all 2s ease-in;
+  /* WebKit */
+  -webkit-transition: all 2s ease-in;
+  /* Opera */
+  -o-transition: all 2s ease-in;
+  /* Standard */
+  transition: all 2s ease-in;
+}
+
+#generate,
+#clear-path-btn,
+#find-path-btn {
+  margin: 0 auto;
+  display: flex;
+  margin-top: 1em;
+  font-size: 1.5em;
+}
+
+.alert.fail {
+  background: #ed0000;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
+  font-size: 1.5em;
 }
